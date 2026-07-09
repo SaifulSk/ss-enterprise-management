@@ -1,0 +1,305 @@
+Product Requirements Document
+Multi-Site Stock, Tools, Labour & Site-Cost Management Web Application
+Prepared for: Building Materials & Site Contracting Business
+Version 3.0 — Refined after review of Baruipur & Salapuria Boundary Wall site registers
+Date: July 2026
+1. Document Control
+Field
+Detail
+Document Title
+PRD — Multi-Site Stock, Tools, Labour & Site-Cost Management System
+Version
+3.0 (supersedes v2.0)
+What changed in v2
+Incorporated findings from a discovery call with the operations/business manager, in addition to the earlier 7-site Excel review and handwritten notes
+What changed in v3
+Refined the stock and labour modules after reviewing two further site registers (Baruipur, Salapuria Boundary Wall) — added vehicle-level transaction tracking, any-site-to-any-site transfers, cost-bearing hardware/consumable lines, tool condition status, and a finer labour hierarchy (contractor → crew-lead/Sarder → mistry/labour headcount, half-day attendance, inline advances, task tagging)
+Prepared By
+Business Analyst
+Status
+Draft — pending client sign-off
+2. Executive Summary
+This version substantially deepens the earlier PRD after a discovery call with the business's operations/accounts manager, who currently runs the entire stock, labour, cost, and vendor-tracking process for the company largely from memory and WhatsApp groups.
+The business is a building-materials supply and site-execution contractor operating roughly 11 sites in total — 4 under the manager's direct responsibility and 7 managed on behalf of other parties — plus oversight of 3 related production units (a plywood business, an umbrella/galvanized-sheet unit, and a chemical/adhesive unit) and 2 company vehicles, all currently coordinated by one person.
+The call surfaced a much richer picture of the real cost and accountability chain than the Excel files alone showed: multi-vendor material sourcing, engineering-based billing reconciliation, multi-site labour cost allocation, a daily site cash/capital ledger, vehicle and compliance tracking, and a chronic single-person bottleneck. This PRD updates scope, workflows, and data model to reflect that reality, while keeping the system focused on operational tracking — formal financial/GST accounting continues to sit in the company's existing Tally system, outside this application's scope.
+3. Background — Current State (Updated)
+3.1 From the Excel file review (recap)
+Each site has its own workbook; no shared structure, no running stock balance, inconsistent units.
+Tools/equipment tracked only at some sites by hour-meter/trip readings for costing.
+Labour attendance is a daily name list; wages/advances tracked in separate per-contractor sheets.
+3.2 From the manager's discovery call — the real day-to-day process
+Before a project starts: travel expenses to visit/survey the site, and a local market survey of nearby hardware/building-material shops and their rates — this record is sent back and used once the tender is approved.
+Once confirmed, a purchase list is drawn up: sand, stone, cement, rod/TMT (with size variations like 10mm/8mm/12mm), shuttering plywood and battens, binding wire, nails, paint, and general hardware.
+Before material even starts moving, a labour camp is set up at the site: worker accommodation or a rented room, an office structure (bamboo/tin or rented), electrical setup, and camp supplies (cooking utensils, gas, bedding) plus worker PPE (jacket, helmet, shoes, gloves).
+Ad-hoc site needs come up during execution and get purchased reactively (e.g., 50 raincoats/ponchos bought for workers during unseasonal rain at one site, better-quality raincoats for supervisors).
+Daily grocery/food expense at each site is updated continuously.
+A single material requirement is often fulfilled by multiple vendors simultaneously (e.g., 3 sand suppliers), because one supplier alone cannot meet the full quantity — each vendor's contribution and running payment balance must be tracked separately, in addition to a combined "mother figure" total received at the site.
+Many small/unorganised suppliers (common outside West Bengal, described as the local "syndicate" system) do not issue a proper invoice at the time of delivery — only a handwritten khata note agreed between supplier and site owner. The manager tracks these running balances informally (in Excel) until a formal, proper invoice is eventually available; only transactions with a proper invoice are entered into the company's formal Tally books. This PRD treats that informal running balance as a legitimate accounts-payable tracking need — final financial/GST reporting remains a matter for the company's accountant and Tally system, outside this application's scope.
+Stock-out of material must be tagged with purpose and exact location of use (e.g., wall, footing/foundation, beam, shuttering, above/below existing-ground-level) so it can later be reconciled against the client billing quantity, which is calculated from engineering "abstract" sheets (quantities derived from drawings).
+When actual material used doesn't match the billed/engineering quantity, the gap is first attributed to normal wastage; anything beyond that is flagged as likely misuse or loss in transit — a sensitive issue that is hard to prove and is generally not raised directly with site staff.
+Labour attendance must record not just headcount but which contractor's crew, and — critically — where each worker actually worked that day, since one contractor's crew is often split across multiple sites/office in a single day. Cost must be apportioned to each site's budget based on this split, not simply assigned in full to whichever site recorded the attendance.
+Each site sends a daily handwritten expense ledger (photographed and posted to a site WhatsApp group); a fixed daily "capital" amount is issued to each site supervisor, from which day-to-day expenses are paid and later itemised.
+Money transfers from the office to a site must be recorded carefully to avoid double counting: the amount sent should be entered as "capital received" at the site, and expenses paid out of that capital recorded separately — not re-entered as if it were new spend on top of the capital already logged.
+Costs are aggregated monthly per site across categories — material, labour, camp/grocery, travel, hardware, miscellaneous/consumables — and compared against what was billed to the client, to check whether the site is actually profitable after accounting for staff salaries.
+Beyond the sites: company vehicle fuel and running costs are logged per vehicle, servicing schedules tracked via daily odometer readings from drivers, and truck/lorry tax and pollution-certificate expiry dates need monitoring, alongside company-level compliance dates (GST valuation renewal, Udyog/MSME registration renewal).
+An office store room holds machinery/equipment and other assets; items issued out need to be tracked as returnable or not, since equipment has previously gone missing without anyone accountable.
+Structural/shed materials (a separate, larger category) include aluminium sheets, colour sheets, galvalume sheets, various beams (ISMB, ISMC), angles and channels in multiple sizes, foundation bolts, ridges, and more — often billed by square metre even though received by piece count, requiring unit-conversion calculations (piece → area → weight).
+The entire process today is run by one person from memory and a phone group, with no per-site accountability — site-level staff (supervisors, engineers, labourers) generally do not track or even know their own site's current stock. The manager has proposed splitting this across a minimum of two to three office roles (accounts + machinery; site materials + billing) plus one accountable in-charge per site, so the load isn't concentrated in a single person.
+3.3 From two further site registers (Baruipur, Salapuria Boundary Wall)
+Every stock-in and transfer line already records a vehicle/car number (e.g., a specific registration number or a named vehicle like "Raju Tempo") — this is exactly the transport-accountability data point the manager described as a way to catch material going missing in transit, and should be a required field on transactions, not an afterthought.
+Material moves directly site-to-site in routine practice (e.g., Salapuria to Green Ply, Salapuria to Austin), not only office-to-site — confirming transfers must support any site as both source and destination.
+Hardware/consumable items (nails, screws, a toilet pan, a drill machine, AC repairing) are logged with a direct cost amount, effectively doubling as a running day-to-day expense ledger rather than pure stock-quantity tracking.
+Tools/equipment returned to the office are explicitly logged, including items marked as broken/junk ("bekar machine") — confirming assets need a condition status (working/damaged), not just a location and returnable flag.
+Labour records reveal a hierarchy deeper than "contractor → worker": a crew-lead ("Sarder") heads a sub-group under the contractor; entries split Mistry (skilled) vs Labour (general) headcounts, support half-day/fractional attendance (e.g., 8.5, 13 heads), capture task tags (e.g., "electric work"), and note advances inline against a specific day's attendance.
+A miscellaneous "Other's" ledger captures large one-off vendor payments that don't fit any material category (e.g., a lump-sum payment to an iron trading company) — confirming the need for a true catch-all expense category.
+4. Problem Statement (Updated)
+All operational knowledge is concentrated in one manager; there is no shared, structured system, so training a replacement or adding staff currently takes months and rarely succeeds.
+Sites are managed separately with no single place to view or manage them together, and site-level staff take no ownership of stock or costs at all.
+Tools, materials, and vendor payments cannot be reliably tracked as they move between sites and vendors.
+Material leftovers, wastage, and possible misuse are only discovered long after the fact (sometimes months later), when it's too late to act.
+Labour cost cannot be accurately allocated per site when a contractor's crew works across multiple locations in a day.
+Manual double-entry risk exists in the daily capital/expense ledger process.
+The client wants a permanent, structured system that is still simple enough for site-level, non-technical staff to use daily.
+5. Goals & Objectives
+Provide one centralized system covering all sites (starting with the primary 8 discussed initially, extensible to the full ~11-site operation) accessible to Company Admin at any time.
+Maintain a live, vendor-wise stock ledger per site per material, including multi-vendor fulfilment of a single requirement.
+Enforce site-level accountability: whoever is on-site enters stock, labour, and expense data and owns it, rather than a central manager reconstructing everything from memory.
+Track labour cost with per-site allocation, even when one contractor's crew is split across multiple sites.
+Support billing reconciliation: compare material issued against engineering/billed quantities, and flag wastage or possible misuse for site-level review.
+Track daily site capital and expenses with built-in double-counting prevention.
+Provide monthly cost roll-ups per site (material + labour + camp + travel + hardware + misc) comparable against billing, to assess site-level profitability.
+Support vehicle fleet and compliance-date tracking as a lightweight add-on module.
+Keep the site-level data entry interface simple enough for supervisors and contractors with basic tech comfort.
+6. Scope
+6.1 In Scope (Phase 1)
+Web application with role-based login for Company Admin, Site Supervisor, and Contractor.
+Material master (with size/type variations), stock ledger, multi-vendor tracking, and inter-site stock transfer.
+Tool/equipment master and location/usage tracking.
+Labour master, daily attendance with multi-site allocation remarks, and contractor-wise crew and payment management.
+Labour camp inventory and personal product/PPE distribution tracking.
+Wastage/misuse flagging via stock-vs-billing reconciliation.
+Purchase/vendor entry, including informal running balances for suppliers without a formal invoice yet.
+Daily site capital and expense ledger, replacing the WhatsApp-photo process, with automatic capital-vs-expense separation to prevent double counting.
+Monthly job/site cost roll-up and basic profitability view (cost vs. billed amount).
+Transport log for material/labour movement between sites.
+Dashboards and exportable reports, scoped by role.
+6.2 In Scope (Phase 1, lightweight) — Fleet & Compliance
+Vehicle master with fuel log, odometer readings, and servicing due dates.
+Compliance calendar for vehicle tax/pollution certificate expiry and company-level renewal dates (GST valuation, Udyog registration), with reminders.
+Office store/asset register with issued-to and returnable/non-returnable tracking.
+6.3 Out of Scope (Phase 1)
+Formal GST-compliant invoicing and financial accounting — remains in the existing Tally system; this application is not a replacement for statutory accounting.
+The 3 side production units (plywood, umbrella/sheet, chemical) and the 2 personal-business vehicles — noted as a possible future module, pending client confirmation of whether they should be included.
+Engineering BBS (Bar Bending Schedule) and full abstract-quantity calculation tools — Phase 1 will let users record billed vs. issued quantities for reconciliation, but won't perform engineering design calculations itself.
+Biometric/RFID attendance hardware integration.
+Offline-first mobile app (dependent on confirming site connectivity).
+7. Business Process Overview (from Manager Discovery Call)
+This section documents, in order, how a site's cost and material lifecycle actually flows today — this is the process the system needs to digitize.
+7.1 Pre-Project
+Travel to and survey the prospective site (main cost: travel/fuel/flight/train).
+Survey local hardware/building-material shops for rates; record findings for later use.
+On tender approval, retrieve the recorded local rates and finalize the purchase list.
+7.2 Site Setup
+Set up labour camp: accommodation, office structure, electrical, cooking/bedding supplies.
+Procure worker PPE (helmets, jackets, shoes, gloves).
+7.3 Material Procurement & Stock-In
+Place orders for civil materials (sand, stone, cement, rod/TMT with size variants) and shuttering materials (ply, battens, binding wire, nails, paint, hardware).
+Where one vendor can't fulfil full quantity, split across multiple vendors and track each vendor's delivered quantity and running payment balance separately, alongside a combined site-level received total.
+Record vendor payments against each vendor's running balance as they're made.
+7.4 Stock-Out, Usage & Reconciliation
+Record material issued from site stock with purpose and exact location of use (e.g., wall, footing, beam, shuttering, above/below ground level).
+At billing time, compare quantity issued against the client-billed/engineering abstract quantity for that structural element.
+Any shortfall beyond expected wastage is flagged as possible misuse/loss for management review.
+7.5 Labour & Contractor Cost
+Record daily attendance by contractor/worker, with a remarks field capturing which site(s) each worker actually worked at that day.
+Calculate wages due per contractor based on attendance, net of advances paid.
+Apportion each contractor's total daily payment across the sites their crew actually worked at, rather than assigning it wholly to one site.
+7.6 Daily Site Cash & Expense Ledger
+Office issues a fixed daily capital amount to each site supervisor.
+Capital received is recorded as "capital in" at the site — separately from expense entries — to prevent double counting.
+Site expenses (grocery, labour payments, hardware, misc.) are logged daily against that capital, categorized (grocery, hardware, labour, travel, misc./consumables).
+7.7 Monthly Roll-Up & Profitability
+All cost categories (material, labour, camp, travel, hardware, misc.) are aggregated monthly per site.
+Total site cost is compared against the amount billed to the client for that period to assess actual profitability after overheads.
+8. User Roles & Personas
+8.1 Company Admin
+Full visibility and management rights across all sites, vendors, labour, and cost data. Uses the system mainly on desktop, for oversight, reconciliation, and reporting.
+8.2 Project / Site Supervisor
+Site-level user responsible for one (or a small number of) sites; the primary day-to-day data-entry user, needing the simplest possible mobile interface. Under the new design, the supervisor is expected to take real ownership of their site's stock and expense entries — closing the current gap where site staff don't track their own stock.
+8.3 Contractor
+Manages one or more labour crews. Marks/confirms attendance for their crew and records which site(s) each worker was actually deployed to on a given day, and views wages/advances for their crew.
+9. Functional Requirements
+9.1 Authentication & Access Control
+Role-based login (Company Admin, Site Supervisor, Contractor); each Supervisor/Contractor account scoped to their assigned site(s)/crew only.
+Audit log of who entered/edited what, and when.
+9.2 Site & Material Master Data
+Site master (site code, name, address, status) — extensible beyond the initial 8 sites.
+Material master with category, standard unit, unit-conversion table (e.g., bag ↔ kg ↔ CFT), and support for size/type variations (e.g., 10mm/8mm/12mm rod; various beam, angle, and channel sizes).
+9.3 Stock Management with Multi-Vendor Tracking
+Live stock ledger per site per material: opening balance, in, out, current balance.
+Multiple vendors can contribute to a single stock-in requirement; each vendor's delivered quantity, rate, and amount are tracked on a separate running ledger, in addition to a combined site total.
+Vendor payments recorded against each vendor's ledger, showing running balance owed/paid — supporting vendors who haven't yet issued a formal invoice, tracked informally until a proper bill is available. Formal, invoice-backed transactions remain the responsibility of the company's existing Tally/accounting process.
+Every stock-in and transfer transaction captures the delivering vehicle (registration number or named vehicle) — supporting transport-level accountability for material that goes missing in transit.
+Hardware and consumable items can optionally carry a direct cost/amount per line, so day-to-day hardware purchases double as a lightweight expense record, not just a quantity log.
+Stock-out entries require purpose and structural-location tagging (e.g., wall, footing, beam, shuttering, above/below ground level) to support later billing reconciliation.
+9.4 Billing Reconciliation & Wastage/Misuse Flagging
+Admin/Supervisor can enter the client-billed or engineering-abstract quantity for a structural element/job.
+System compares issued quantity vs. billed quantity and computes the variance.
+Variance within a configurable wastage tolerance is treated as normal; variance beyond tolerance is flagged for management review as possible misuse or loss — without assigning blame automatically.
+9.5 Inter-Site Stock & Tool Transfer
+Request/confirm transfer workflow supporting any site as both source and destination (not limited to office-to-site), for both materials and tools, with full transfer history including the transporting vehicle.
+9.6 Tools & Equipment Management
+Tool master with current location, ownership/rental terms, usage-hours/trip logging feeding into job costing, and damage/loss logging.
+Condition status (working / damaged / under repair) recorded whenever a tool is returned to the office store, in addition to its returnable/non-returnable flag.
+9.7 Labour Attendance & Multi-Site Cost Allocation
+Worker/contractor master supporting a crew-lead ("Sarder") layer between the contractor and individual workers, where applicable.
+Daily attendance marked by Supervisor or Contractor (subject to confirmation), recorded as headcount split by trade — Mistry (skilled) vs Labour (general) — with support for half-day/fractional attendance.
+Attendance entries support a remarks/allocation field specifying how many of a contractor's workers worked at each site/location that day, and an optional task tag (e.g., electrical work, masonry).
+Advances can be recorded inline against a specific day's attendance entry, in addition to standalone advance payments.
+Wage calculation nets attendance against agreed rate and prior advances; the resulting payment is apportioned across sites according to the recorded allocation, rather than posted in full to a single site.
+9.8 Labour Camp & Personal Products
+Camp supply stock (food, gas, bedding) tracked with running balance, optionally linked to site cost.
+Personal product/PPE distribution logged by item, quantity, and recipient (worker or bulk site-level).
+9.9 Daily Site Capital & Expense Ledger
+Office can log a capital transfer to a site, recorded as "capital in" at that site.
+Site expenses are logged separately, categorized (grocery, hardware, labour, travel, misc./consumables/other — including one-off vendor lump-sum payments that don't fit a material category), against the site's running capital balance.
+System design explicitly prevents a capital-in entry from also being counted as an expense entry, addressing the double-counting risk described by the manager.
+Running capital balance visible to both the Supervisor (their own site) and Company Admin (all sites).
+9.10 Job/Site Costing & Monthly Roll-Up
+Aggregate material + labour + camp + travel + hardware + misc. cost per site per month.
+Compare monthly cost against the amount billed to the client for that site/period to show a basic profitability view.
+9.11 Vendor & Purchase Management
+Vendor master; purchase entries recording vendor, material, quantity, rate, and amount, automatically updating stock at the receiving site.
+9.12 Transport & Vehicle Fleet (Lightweight)
+Transport log for material/labour movement between sites.
+Vehicle master with fuel log entries, daily odometer readings, and servicing due-date tracking.
+Compliance calendar for vehicle tax/pollution certificate expiry and company-level renewal dates (GST valuation, Udyog/MSME registration), with configurable reminders.
+9.13 Office Store & Asset Register
+Store room inventory of office equipment/machinery; items issued out are logged as returnable or non-returnable, with return status tracked.
+9.14 Reporting & Dashboards
+Company Admin dashboard: consolidated view across all sites — stock, tool locations, labour cost, capital/expense summary, vendor balances, and site profitability.
+Supervisor/Contractor dashboards scoped to their own site/crew.
+Standard reports: site-wise stock statement, vendor ledger, wastage/misuse report, labour cost allocation report, daily capital/expense report, monthly site cost vs. billing report, vehicle/compliance status report — all exportable (Excel/PDF).
+10. Roles & Permissions Matrix
+Capability
+Company Admin
+Site Supervisor
+Contractor
+View all sites
+Yes
+No (own site only)
+No
+Record stock in/out incl. multi-vendor entries
+Yes
+Yes (own site)
+No
+View/manage vendor ledgers & payments
+Yes
+View own site's vendors
+No
+Tag stock-out with location/purpose
+Yes
+Yes (own site)
+No
+View billing reconciliation & wastage flags
+Yes (all sites)
+Own site only
+No
+Mark labour attendance + site allocation remarks
+Yes
+Yes (own site)
+Own crew (needs confirmation)
+View/manage wages, advances & allocation
+Yes
+View own site
+View own crew
+Manage daily site capital & expenses
+Yes (issue capital, view all)
+Yes (own site, log expenses)
+No
+View monthly site cost/profitability report
+Yes (all sites)
+No
+No
+Manage vehicles/compliance calendar
+Yes
+No
+No
+Manage office store/asset register
+Yes
+No
+No
+Export reports
+Yes (all sites)
+Own site only
+Own crew only
+11. Key Data Entities (Updated)
+Entity
+Key Fields
+Site
+Site ID, Name, Address, Status, Type (own/managed-for-others)
+Material
+Material ID, Name, Category, Size/Type Variant, Standard Unit, Unit Conversion
+Vendor
+Vendor ID, Name, Contact, Has-formal-invoice flag
+Vendor Ledger Entry
+Vendor, Site, Material, Quantity, Rate, Amount, Payment Made, Running Balance
+Stock Transaction
+Date, Site, Material, Type (In/Out/Transfer/Wastage), Quantity, Vendor (if In), Vehicle/Car No, Location/Purpose Tag (if Out), Cost Amount (if Hardware/Consumable), Recorded By
+Billing Reference
+Site, Structural Element, Billed/Abstract Quantity, Issued Quantity, Variance, Flag Status
+Tool/Equipment
+Tool ID, Type, Ownership, Current Site, Rental Terms, Condition Status (Working/Damaged/Under Repair)
+Worker
+Worker ID, Name, Role/Trade (Mistry/Labour), Contractor, Crew-Lead (Sarder), Base/Home Site
+Contractor
+Contractor ID, Name, Contact
+Attendance
+Worker/Crew, Date, Headcount (supports half-day/fractional), Trade Split, Task Tag, Site Allocation Remarks (site: count), Inline Advance
+Payment
+Contractor/Worker, Type (Wage/Advance), Amount, Date, Site Allocation
+Site Capital Account
+Site, Date, Capital In, Running Balance
+Site Expense
+Site, Date, Category (Grocery/Hardware/Labour/Travel/Misc), Amount, Remarks
+Camp
+Camp ID, Linked Site(s), Supply Stock Transactions
+Vehicle
+Vehicle ID, Type, Fuel Log, Odometer Readings, Service Due Date, Tax/Pollution Expiry
+Compliance Item
+Type (GST/Udyog/Vehicle Tax/Pollution), Entity, Due Date, Status
+Store Asset
+Asset ID, Description, Location, Issued To, Returnable (Y/N), Return Status
+12. Non-Functional Requirements
+Usability: Site Supervisor and Contractor interfaces must be simple enough for basic-smartphone-literate users — minimal fields, large touch targets.
+Data sensitivity: vendor-ledger and site-capital/expense data should be visible only to Company Admin and the relevant site's Supervisor — not shared broadly — given the informal-ledger sensitivity described in the discovery call.
+Reliability: data entry should tolerate intermittent site connectivity, with retry/queue on poor networks.
+Security: strict role-based data isolation; encrypted credential storage; full audit trail.
+Scalability: architecture should support adding sites, materials, vendors, or vehicles without structural rework — including the currently out-of-scope 7 additional sites and 3 production units, if added later.
+Export: all key reports exportable to Excel/PDF.
+13. Assumptions & Open Questions
+Confirm whether Phase 1 covers only the original 8 sites, or should also include the remaining ~3 sites and the 3 production units mentioned in the call.
+Confirm the wastage tolerance threshold per material category for billing reconciliation flags.
+Confirm who should have visibility into vendor running balances and site capital/expense data beyond Company Admin — e.g., should a future "Accounts" role be introduced.
+Confirm whether informal (non-invoiced) vendor entries should ever sync to Tally, or remain permanently separate as operational-only records.
+Confirm site-level internet reliability, to finalize whether offline-tolerant entry is required in Phase 1.
+Confirm whether vehicle/compliance tracking should include the 2 vehicles used for the owner's separate plywood business.
+Confirm the organizational rollout plan — the manager has proposed a minimum of 2–3 office roles plus one in-charge per site; confirm target role structure so the system's permission model matches real staffing.
+14. Organizational Recommendation
+Based directly on the manager's own observation, a system alone will not fix the underlying single-person bottleneck. The following staffing split was suggested during the call and is recommended alongside the system rollout:
+One office role covering accounts and machinery/tool tracking.
+One office role covering site materials and billing reconciliation.
+One accountable in-charge per site (in addition to existing Supervisors), responsible for daily stock, labour, and expense entry at that site.
+A realistic training runway of several months per new staff member, combining system training with hands-on site visits — the manager noted that group-chat-only training has not worked in the past.
+15. Future Scope (Phase 2+)
+Engineering support tools: Bar Bending Schedule (BBS) calculation and structural abstract-quantity generation.
+Integration of the 3 production units and personal-business vehicle tracking, if confirmed in scope.
+Biometric/RFID attendance and offline-first mobile app.
+Automated reorder-level alerts and predictive cost/budget tracking.
+Optional formal accounting/Tally integration, subject to the company's accountant's guidance.
+16. Success Metrics
+100% of active sites recording stock, labour, and expense data in the new system, replacing WhatsApp-photo ledgers.
+Vendor running balances and site capital accounts reconcile with zero double-counting incidents.
+Billing reconciliation flags material variances within days of stock-out, rather than months later.
+Labour cost allocation matches actual site deployment for contractor crews working across multiple sites.
+Monthly site cost vs. billing report available on-demand, replacing manual compilation.

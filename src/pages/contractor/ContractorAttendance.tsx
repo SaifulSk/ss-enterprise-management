@@ -1,0 +1,148 @@
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
+import { useAuth } from '../../context/AuthContext';
+import { Plus, X, Pencil, Trash2 } from 'lucide-react';
+
+interface Site { id: string; name: string; }
+
+export const ContractorAttendance: React.FC = () => {
+  const { currentUser } = useAuth();
+  const [sites, setSites] = useState<Site[]>([]);
+  const [records, setRecords] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [allocations, setAllocations] = useState<{ siteId: string; count: string }[]>([{ siteId:'', count:'' }]);
+  const [form, setForm] = useState({ date:new Date().toISOString().split('T')[0], mistryCount:'', labourCount:'', taskTag:'', inlineAdvance:'', advanceReason:'', notes:'' });
+
+  const loadAll = async () => {
+    setLoading(true);
+    const [sSnap, aSnap] = await Promise.all([
+      getDocs(collection(db, 'sites')),
+      getDocs(query(collection(db, 'attendance'), orderBy('date','desc'))),
+    ]);
+    setSites(sSnap.docs.map(d=>({id:d.id,name:(d.data() as any).name})));
+    setRecords(aSnap.docs.map(d=>({id:d.id,...d.data()})));
+    setLoading(false);
+  };
+  useEffect(() => { loadAll(); }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault(); setSaving(true);
+    const allocs = allocations.filter(a=>a.siteId&&a.count).map(a=>{
+      const site = sites.find(s=>s.id===a.siteId);
+      return { siteId:a.siteId, siteName:site?.name||'', count:parseFloat(a.count) };
+    });
+    const data = {
+      ...form, contractorId: currentUser?.uid||'', contractorName: currentUser?.displayName||currentUser?.email||'',
+      mistryCount: parseFloat(form.mistryCount)||0, labourCount: parseFloat(form.labourCount)||0,
+      inlineAdvance: parseFloat(form.inlineAdvance)||0,
+      siteAllocations: allocs, updatedAt: new Date().toISOString()
+    };
+    try {
+      if (editId) {
+        await updateDoc(doc(db, 'attendance', editId), data);
+      } else {
+        await addDoc(collection(db, 'attendance'), { ...data, createdAt: new Date().toISOString() });
+      }
+      setShowModal(false); loadAll();
+    } finally { setSaving(false); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm(`Are you sure you want to delete this attendance record?`)) {
+      await deleteDoc(doc(db, 'attendance', id));
+      loadAll();
+    }
+  };
+
+  return (
+    <div>
+      <div className="page-header">
+        <div><h2>Mark Attendance</h2><p>Log daily attendance for your crew with site allocation</p></div>
+        <button className="btn-primary" onClick={()=>{ setForm({date:new Date().toISOString().split('T')[0],mistryCount:'',labourCount:'',taskTag:'',inlineAdvance:'',advanceReason:'',notes:''}); setAllocations([{siteId:'',count:''}]); setEditId(null); setShowModal(true); }}><Plus size={16}/>Mark Today</button>
+      </div>
+
+      <div className="glass-card" style={{ padding:0 }}>
+        {loading ? <div className="empty-state"><p>Loading...</p></div> :
+        records.length===0 ? <div className="empty-state"><div className="icon">📋</div><h4>No attendance records yet</h4></div> :
+        <div className="table-wrapper" style={{ border:'none', borderRadius:'var(--radius)' }}>
+          <table className="data-table">
+            <thead><tr><th>Date</th><th>Mistry</th><th>Labour</th><th>Total</th><th>Task</th><th>Site Allocation</th><th>Advance ₹</th><th>Actions</th></tr></thead>
+            <tbody>
+              {records.map(r=>(
+                <tr key={r.id}>
+                  <td>{r.date}</td><td>{r.mistryCount}</td><td>{r.labourCount}</td>
+                  <td style={{ fontWeight:700 }}>{(r.mistryCount||0)+(r.labourCount||0)}</td>
+                  <td><span className="badge gray">{r.taskTag||'—'}</span></td>
+                  <td style={{ fontSize:'0.8rem', color:'var(--text-muted)' }}>{r.siteAllocations?.map((a:any)=>`${a.siteName}: ${a.count}`).join(', ')||'—'}</td>
+                  <td>{r.inlineAdvance>0?`₹${r.inlineAdvance}`:'—'}</td>
+                  <td>
+                    {r.contractorId === currentUser?.uid && (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '0.8rem' }} onClick={() => {
+                          setForm({
+                            date: r.date, mistryCount: String(r.mistryCount||''), labourCount: String(r.labourCount||''),
+                            taskTag: r.taskTag||'', inlineAdvance: String(r.inlineAdvance||''),
+                            advanceReason: r.advanceReason||'', notes: r.notes||''
+                          });
+                          setAllocations(r.siteAllocations?.length ? r.siteAllocations.map((a: any) => ({ siteId: a.siteId, count: String(a.count) })) : [{ siteId: '', count: '' }]);
+                          setEditId(r.id); setShowModal(true);
+                        }}><Pencil size={13}/></button>
+                        <button className="btn-danger" style={{ padding: '5px 10px', fontSize: '0.8rem' }} onClick={() => handleDelete(r.id)}>
+                          <Trash2 size={13}/>
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>}
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowModal(false)}>
+          <div className="modal-card" style={{ maxWidth:600 }}>
+            <div className="modal-header"><h3>{editId ? 'Edit' : 'Mark'} Attendance</h3><button className="btn-secondary" style={{ padding:'6px' }} onClick={()=>setShowModal(false)}><X size={16}/></button></div>
+            <form onSubmit={handleSave}>
+              <div className="modal-body">
+                <div className="form-grid">
+                  <div className="form-group span-2"><label className="form-label">Date *</label><input type="date" className="form-control" required value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">Mistry Count</label><input type="number" step="0.5" className="form-control" placeholder="Skilled workers (0.5 = half day)" value={form.mistryCount} onChange={e=>setForm(f=>({...f,mistryCount:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">Labour Count</label><input type="number" step="0.5" className="form-control" placeholder="General workers (0.5 = half day)" value={form.labourCount} onChange={e=>setForm(f=>({...f,labourCount:e.target.value}))} /></div>
+                  <div className="form-group span-2"><label className="form-label">Task</label><input className="form-control" placeholder="e.g. Masonry, Shuttering, Plumbing" value={form.taskTag} onChange={e=>setForm(f=>({...f,taskTag:e.target.value}))} /></div>
+
+                  <div className="form-group span-2">
+                    <label className="form-label">Site Allocations (which workers went where)</label>
+                    {allocations.map((a,i)=>(
+                      <div key={i} style={{ display:'flex', gap:8, marginBottom:8 }}>
+                        <select className="form-control" value={a.siteId} onChange={e=>setAllocations(al=>al.map((x,j)=>j===i?{...x,siteId:e.target.value}:x))}>
+                          <option value="">Select site</option>{sites.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                        <input type="number" step="0.5" className="form-control" style={{ width:90, flexShrink:0 }} placeholder="Count" value={a.count} onChange={e=>setAllocations(al=>al.map((x,j)=>j===i?{...x,count:e.target.value}:x))} />
+                        {allocations.length>1&&<button type="button" className="btn-danger" onClick={()=>setAllocations(al=>al.filter((_,j)=>j!==i))}>✕</button>}
+                      </div>
+                    ))}
+                    <button type="button" className="btn-secondary" style={{ fontSize:'0.8rem', padding:'6px 12px' }} onClick={()=>setAllocations(al=>[...al,{siteId:'',count:''}])}>+ Add Site</button>
+                  </div>
+
+                  <div className="form-group"><label className="form-label">Advance Paid ₹</label><input type="number" className="form-control" value={form.inlineAdvance} onChange={e=>setForm(f=>({...f,inlineAdvance:e.target.value}))} /></div>
+                  <div className="form-group"><label className="form-label">Advance Reason</label><input className="form-control" value={form.advanceReason} onChange={e=>setForm(f=>({...f,advanceReason:e.target.value}))} /></div>
+                  <div className="form-group span-2"><label className="form-label">Notes</label><textarea className="form-control" rows={2} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} /></div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn-secondary" onClick={()=>setShowModal(false)}>Cancel</button>
+                <button type="submit" className="btn-primary" disabled={saving}>{saving?'Saving...':'Save Attendance'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -3,9 +3,9 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Package, Truck, Wrench, Users, ClipboardList,
-  Wallet, BarChart2, ShieldCheck, Archive, UserCog, LogOut, Menu,
+  Wallet, BarChart2, Archive, UserCog, LogOut, Menu,
   ChevronDown, ChevronRight, ChevronLeft, ClipboardCheck, Receipt, BookOpen,
-  CreditCard, PanelLeftClose, PanelLeftOpen, X
+  CreditCard, X
 } from 'lucide-react';
 
 interface NavItem {
@@ -180,16 +180,7 @@ export const Layout: React.FC = () => {
     currentUser?.role === 'admin' ? 'Company Admin' :
     currentUser?.role === 'supervisor' ? 'Site Supervisor' : 'Contractor';
 
-  const currentPageLabel = (() => {
-    for (const item of navItems) {
-      if (item.children) {
-        const child = item.children.find(c => location.pathname === c.path);
-        if (child) return child.label;
-      }
-      if (item.path && location.pathname === item.path) return item.label;
-    }
-    return 'Dashboard';
-  })();
+
 
   const sidebarWidth = mobileOpen ? 260 : (collapsed ? 64 : 260);
 

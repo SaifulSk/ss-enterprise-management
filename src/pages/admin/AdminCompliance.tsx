@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Plus, X, ShieldCheck, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
 
 const COMPLIANCE_TYPES = ['GST Valuation Renewal', 'Udyog/MSME Registration', 'Vehicle Tax', 'Pollution Certificate', 'Labour License', 'Shop Act', 'Other'];
 
 interface ComplianceItem {
   id: string; type: string; entityName: string; dueDate: string; status: 'Upcoming' | 'Overdue' | 'Done'; notes: string;
 }
-const emptyForm = { type: 'GST Valuation Renewal', entityName: '', dueDate: '', status: 'Upcoming' as const, notes: '' };
+const emptyForm = { type: 'GST Valuation Renewal', entityName: '', dueDate: '', status: 'Upcoming' as 'Upcoming' | 'Overdue' | 'Done', notes: '' };
 
 export const AdminCompliance: React.FC = () => {
   const [items, setItems] = useState<ComplianceItem[]>([]);

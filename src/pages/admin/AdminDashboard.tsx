@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { MapPin, Package, Truck, Users, Wallet, AlertTriangle, TrendingUp, Wrench, Car, ShieldCheck, ClipboardList } from 'lucide-react';
+import { MapPin, Package, Truck, Users, Wallet, AlertTriangle, TrendingUp, Wrench, ShieldCheck, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Stats {

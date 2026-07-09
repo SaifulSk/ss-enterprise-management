@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
-import { Package, Wallet, ClipboardList, AlertTriangle } from 'lucide-react';
+import { Package, Wallet, AlertTriangle } from 'lucide-react';
 
 export const SupervisorDashboard: React.FC = () => {
   const { currentUser } = useAuth();

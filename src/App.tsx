@@ -1,4 +1,4 @@
-import React from 'react';
+
 // v3 - all PRD modules implemented
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -55,7 +55,7 @@ const RootRoute = () => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <Routes>
           <Route path="/login" element={<Login />} />
 

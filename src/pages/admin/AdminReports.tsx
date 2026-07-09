@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { BarChart2, TrendingUp, Package, Users, Wallet } from 'lucide-react';
+import { BarChart2, TrendingUp, Package, Wallet } from 'lucide-react';
 
 interface Site { id: string; name: string; }
 
@@ -19,7 +19,7 @@ export const AdminReports: React.FC = () => {
   const generateReport = async () => {
     setLoading(true);
     try {
-      const [stockSnap, expSnap, capSnap, attSnap, recSnap] = await Promise.all([
+      const [stockSnap, expSnap, capSnap, _attSnap, recSnap] = await Promise.all([
         getDocs(query(collection(db, 'stock_transactions'), orderBy('date'))),
         getDocs(query(collection(db, 'site_expenses'), orderBy('date'))),
         getDocs(query(collection(db, 'capital_transfers'), orderBy('date'))),

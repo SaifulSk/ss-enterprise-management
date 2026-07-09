@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Plus, X, ClipboardList, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, Pencil, Trash2 } from 'lucide-react';
 
 interface AttendanceRecord {
   id: string; date: string; contractorId: string; contractorName: string;

@@ -7,7 +7,7 @@ interface StoreAsset {
   id: string; description: string; assetCode: string; quantity: number;
   issuedTo: string; issuedDate: string; returnable: boolean; returnStatus: 'Not Issued' | 'Issued' | 'Returned' | 'Lost'; notes: string;
 }
-const emptyForm = { description:'', assetCode:'', quantity:'1', issuedTo:'', issuedDate:'', returnable: true, returnStatus: 'Not Issued' as const, notes:'' };
+const emptyForm = { description:'', assetCode:'', quantity:'1', issuedTo:'', issuedDate:'', returnable: true, returnStatus: 'Not Issued' as 'Not Issued' | 'Issued' | 'Returned' | 'Lost', notes:'' };
 
 export const AdminOfficeStore: React.FC = () => {
   const [assets, setAssets] = useState<StoreAsset[]>([]);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Plus, X, Package, ArrowUp, ArrowDown, ArrowLeftRight, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, ArrowUp, ArrowDown, ArrowLeftRight, Pencil, Trash2 } from 'lucide-react';
 
 interface StockTx {
   id: string; date: string; siteId: string; siteName: string;
@@ -16,7 +16,7 @@ interface Material { id: string; name: string; unit: string; }
 interface Vendor { id: string; name: string; }
 
 const emptyForm = {
-  date: new Date().toISOString().split('T')[0], siteId: '', materialId: '', type: 'In' as const,
+  date: new Date().toISOString().split('T')[0], siteId: '', materialId: '', type: 'In' as 'In' | 'Out' | 'Transfer',
   quantity: '', unit: '', vendorId: '', vehicleNo: '', locationTag: '', purpose: '',
   costAmount: '', toSiteId: '', notes: ''
 };

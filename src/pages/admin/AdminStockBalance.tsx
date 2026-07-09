@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Package, TrendingDown, TrendingUp, ArrowLeftRight } from 'lucide-react';
+import { Package, TrendingDown, TrendingUp } from 'lucide-react';
 
 // Stock Balance Summary — shows live running stock per site per material
 // PRD 9.3: "Live stock ledger per site per material: opening balance, in, out, current balance"
@@ -79,7 +79,6 @@ export const AdminStockBalance: React.FC = () => {
     .filter(b => !filterMaterial || b.materialId === filterMaterial)
     .sort((a, b) => a.siteName.localeCompare(b.siteName) || a.materialName.localeCompare(b.materialName));
 
-  const totalSites = [...new Set(filtered.map(b => b.siteId))].length;
   const lowStockCount = filtered.filter(b => b.balance <= 0).length;
 
   return (

@@ -9,7 +9,7 @@ interface Tool {
   returnable: boolean; rentalTerms: string; notes: string;
 }
 interface Site { id: string; name: string; }
-const emptyForm = { name: '', type: '', ownership: 'Company' as const, currentSiteId: 'office', condition: 'Working' as const, returnable: true, rentalTerms: '', notes: '' };
+const emptyForm = { name: '', type: '', ownership: 'Company' as 'Company' | 'Rental', currentSiteId: 'office', condition: 'Working' as 'Working' | 'Damaged' | 'Under Repair', returnable: true, rentalTerms: '', notes: '' };
 
 export const AdminTools: React.FC = () => {
   const [tools, setTools] = useState<Tool[]>([]);

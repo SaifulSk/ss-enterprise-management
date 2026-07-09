@@ -22,7 +22,7 @@ export const AdminLabour: React.FC = () => {
   const [saving, setSaving] = useState(false);
 
   // Worker form
-  const [wForm, setWForm] = useState({ name: '', role: 'Labour' as const, contractorId: '', sarderName: '', dailyRate: '', phone: '', homeAddress: '' });
+  const [wForm, setWForm] = useState({ name: '', role: 'Labour' as 'Labour' | 'Mistry', contractorId: '', sarderName: '', dailyRate: '', phone: '', homeAddress: '' });
   // Contractor form
   const [cForm, setCForm] = useState({ name: '', contact: '', specialty: '', notes: '' });
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { Plus, X, Car, AlertCircle, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, Car, Pencil, Trash2 } from 'lucide-react';
 
 interface Vehicle { id: string; regNo: string; type: string; make: string; taxExpiry: string; pollutionExpiry: string; serviceNextDue: string; currentOdometer: number; notes: string; }
 interface FuelLog { id: string; vehicleId: string; date: string; liters: number; costPerLtr: number; odometer: number; notes: string; }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
-import { TrendingDown, TrendingUp, Package } from 'lucide-react';
+
 
 // PRD Section 10: Supervisor can view own site's vendors (not manage them)
 // This is a read-only view of vendor ledger entries for the supervisor's assigned site

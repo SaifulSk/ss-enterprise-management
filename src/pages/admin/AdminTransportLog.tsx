@@ -18,6 +18,7 @@ interface TransportLog {
   workerCount: number; contractorName: string;
   purpose: string; notes: string;
   departureTime: string; arrivalConfirmed: boolean;
+  materialId?: string; contractorId?: string;
 }
 interface Site { id: string; name: string; }
 interface Material { id: string; name: string; unit: string; }

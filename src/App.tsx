@@ -55,7 +55,7 @@ const RootRoute = () => {
 function App() {
   return (
     <AuthProvider>
-      <Router basename={import.meta.env.BASE_URL}>
+      <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
 

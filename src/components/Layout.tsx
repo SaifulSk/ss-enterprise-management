@@ -206,10 +206,10 @@ export const Layout: React.FC = () => {
         {/* Logo / Brand */}
         <div className="sidebar-header" style={{ justifyContent: effectiveCollapsed ? 'center' : 'space-between', padding: effectiveCollapsed ? '0' : '0 16px' }}>
           {effectiveCollapsed ? (
-            <img src="/icon.png" alt="S" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <img src={`${import.meta.env.BASE_URL}icon.png`} alt="S" style={{ width: 32, height: 32, objectFit: 'contain' }} />
           ) : (
             <img
-              src="/logo.png"
+              src={`${import.meta.env.BASE_URL}logo.png`}
               alt="SS Enterprise"
               style={{ width: '100%', maxWidth: '160px',  objectFit: 'contain', display: 'block', margin: mobileOpen ? '0' : '0 auto' }}
               onError={e => {

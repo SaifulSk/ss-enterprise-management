@@ -68,7 +68,7 @@ export const Login: React.FC = () => {
     <div className="auth-wrapper">
       <div className="auth-card">
         <div className="auth-header">
-          <img src="/logo.png" alt="SS Enterprise Logo" style={{ margin: '0 auto 16px auto', height: '80px', display: 'block' }} />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="SS Enterprise Logo" style={{ margin: '0 auto 16px auto', height: '80px', display: 'block' }} />
           <h1>Welcome Back</h1>
           <p>Login to SS Enterprise Management System</p>
         </div>
